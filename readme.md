@@ -1,7 +1,5 @@
 ## `test.sql` Overview
 
-"""
-
 Create the DB if it doesn't exist
 ```
 create database if not exists leocosta_orderbook_test;
