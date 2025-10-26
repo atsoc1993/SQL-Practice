@@ -1,6 +1,6 @@
-create database if not exists leocosta_orderbook_test2;
+create database if not exists leocosta_orderbook_test;
 
-use leocosta_orderbook_test2;
+use leocosta_orderbook_test;
 
 -- drop table if exists orders;
 -- drop table if exists users;

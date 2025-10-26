@@ -7,7 +7,7 @@ create database if not exists leocosta_orderbook_test;
 
 - Specify the DB to use for subsequent SQL
 ```
-use leocosta_orderbook_test2;
+use leocosta_orderbook_test;
 ```
 
 - Delete tables if needed, since there is a foreign key in orders from users, we must delete orders first. These lines are currently commented out
