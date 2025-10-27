@@ -1,10 +1,10 @@
-## DDL Activity
+# DDL Activity
 
-# EER DIAGRAM:
+## EER DIAGRAM:
 
 ![alt text](image.png)
 
-# Instructions
+## Instructions
 The database should keep track of movies we are interested in. Create a .sql script file to create a database named MovieCatalogue that contains the following tables:
 
 ### Movie Table
@@ -36,7 +36,7 @@ The database should keep track of movies we are interested in. Create a .sql scr
 - MovieID - Foreign key, Movie table, Required
 - Role - Required, Extended character set, Length: 50
 
-## `test.sql` Overview
+# `test.sql` Overview
 
 - Create the DB if it doesn't exist
 ```
