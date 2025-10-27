@@ -1,5 +1,6 @@
 # DDL Activity
 *See EER Diagram & Instructions Below*
+
 SQL here: [ddl_activity.sql](https://github.com/atsoc1993/SQL-Practice/blob/main/ddl_activity.sql)
 ## EER DIAGRAM:
 
