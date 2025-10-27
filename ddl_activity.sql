@@ -1,4 +1,4 @@
-DROP DATABASE LeoCosta_MovieDialogue;
+DROP DATABASE IF EXISTS LeoCosta_MovieDialogue;
 
 CREATE DATABASE LeoCosta_MovieDialogue;
 
