@@ -1,3 +1,41 @@
+## DDL Activity
+
+# EER DIAGRAM:
+
+![alt text](image.png)
+
+# Instructions
+The database should keep track of movies we are interested in. Create a .sql script file to create a database named MovieCatalogue that contains the following tables:
+
+### Movie Table
+- MovieID - Primary key, Identity
+- GenreID - Foreign key, Genre table, Required
+- DirectorID - Foreign key, Director table, Not required
+- RatingID - Foreign key, Rating table, Not required
+- Title - Required, Extended character set, Length: 128
+- ReleaseDate - Not required
+### Genre Table
+- GenreID - Primary key, Identity
+- GenreName - Required, Extended character set, Length: 30
+### Director Table
+- DirectorID - Primary key, Identity
+- FirstName - Required, Extended character set, Length: 30
+- LastName - Required, Extended character set, Length: 30
+- BirthDate - Not required
+### Rating Table
+- RatingID - Primary key, Identity
+- RatingName - Required, Standard character set, Length: 5
+### Actor Table
+- ActorID - Primary key, Identity
+- FirstName - Required, Extended character set, Length: 30
+- LastName - Required, Extended character set, Length: 30
+- BirthDate - Not required
+### CastMembers Table
+- CastMemberID - Primary key, Identity
+- ActorID - Foreign key, Actor table, Required
+- MovieID - Foreign key, Movie table, Required
+- Role - Required, Extended character set, Length: 50
+
 ## `test.sql` Overview
 
 - Create the DB if it doesn't exist
