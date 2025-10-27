@@ -1,0 +1,53 @@
+DROP DATABASE LeoCosta_MovieDialogue;
+
+CREATE DATABASE LeoCosta_MovieDialogue;
+
+USE LeoCosta_MovieDialogue;
+
+CREATE TABLE DirectorTable (
+	DirectorID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(30) NOT NULL,
+    LastName VARCHAR(30) NOT NULL,
+    BirthDate DATE NULL
+);
+
+CREATE TABLE RatingTable (
+	RatingID INT PRIMARY KEY AUTO_INCREMENT,
+    RatingName VARCHAR(5) NOT NULL
+);
+
+CREATE TABLE MovieTable (
+	MovieID INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(100) NOT NULL,
+    GenreID INT NOT NULL,
+    DirectorID INT NULL,
+    RatingID INT NULL,
+    ReleaseDate DATE NULL,
+	FOREIGN KEY (DirectorID)
+		REFERENCES DirectorTable(DirectorId),
+	FOREIGN KEY (RatingID)
+		REFERENCES RatingTable(RatingID)
+);
+
+CREATE TABLE GenreTable (
+	GenreID INT PRIMARY KEY AUTO_INCREMENT,
+    GenreName VARCHAR(30) NOT NULL 
+);
+
+CREATE TABLE ActorTable (
+	ActorID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(30) NOT NULL,
+    LastName VARCHAR(30) NOT NULL,
+    BirthDate DATE NULL
+);
+
+CREATE TABLE CastMembersTable (
+	CastMemberID INT PRIMARY KEY AUTO_INCREMENT,
+    ActorID INT NOT NULL,
+    MovieID INT NOT NULL,
+    Role VARCHAR(50) NOT NULL,
+    FOREIGN KEY (ActorID)
+		REFERENCES ActorTable(ActorID),
+	FOREIGN KEY (MovieID)
+		REFERENCES MovieTable(MovieID)
+);
