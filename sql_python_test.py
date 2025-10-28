@@ -44,12 +44,29 @@ def use_db() -> None:
     print(f'Using DB: {db_name}')
     return
     
-def create_user_table() -> str:
+def create_user_table() -> None:
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS `User` (
             UserID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             UserFullName VARCHAR(50) NOT NULL
+        );
+        """
+    )
+    print(f'Created User Table')
+    return
+
+def create_order_table() -> None:
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS `Order` (
+            OrderID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            UserID INT NOT NULL,
+            CONSTRAINT fk_orders_user_id
+                FOREIGN KEY (UserID)
+                    REFERENCES `User`(UserID)
+                    ON DELETE RESTRICT
+                    ON UPDATE CASCADE
         );
         """
     )
@@ -82,7 +99,12 @@ drop_db_if_exists()
 create_db_if_not_exists()
 use_db()
 create_user_table()
+create_order_table()
 
+
+'''
+User Table Mods & Getters Test
+'''
 test_user_1_name = "Leo Costa"
 create_singular_user(full_name=test_user_1_name)
 
@@ -102,3 +124,25 @@ all_user_ids = get_all_user_ids()
 all_user_full_names = get_all_user_full_names()
 print(f'All Current User IDs: {all_user_ids}')
 print(f'All Current User Full Names: {all_user_full_names}')
+
+
+'''
+Order Table Mods & Getters Test
+'''
+
+def create_order_for_user(user_id: int) -> None:
+    cur.execute("INSERT INTO `Order` (UserID) VALUES (%s)", (1))
+    print(f'Created Order for User ID: {user_id}')
+    return
+
+def get_all_orders() -> list[dict]:
+    cur.execute("SELECT * FROM `Order`")
+    return cur.fetchall()
+
+def get_all_order_ids() -> list[dict]:
+    orders = get_all_orders()
+    return [order['OrderID'] for order in orders]
+
+create_order_for_user(1)
+all_current_order_ids = get_all_order_ids()
+print(f'All Current Order IDs: {all_current_order_ids}')
