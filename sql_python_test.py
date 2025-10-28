@@ -13,13 +13,14 @@ connection = pymysql.connect(
     host=host,
     user='root',
     password=password,
-    cursorclass=pymysql.cursors.DictCursor
+    cursorclass=pymysql.cursors.DictCursor,
+    autocommit=True
 )
 
 cur = connection.cursor()
 
 db_name = 'LEOCOSTA_PYMYSQL_ORDERBOOK_TEST'
-users_table_name = 'Users'
+users_table_name = 'User'
 
 def drop_db_if_exists() -> None:
     cur.execute(
@@ -36,7 +37,7 @@ def create_db_if_not_exists() -> None:
     return
 
 
-def use_db() -> str:
+def use_db() -> None:
     cur.execute(
         f'USE {db_name};'
     )
@@ -46,16 +47,58 @@ def use_db() -> str:
 def create_user_table() -> str:
     cur.execute(
         """
-        CREATE TABLE IF NOT EXISTS Users (
-            UserID INT NOT NULL PRIMARY KEY AUTO_INCREMENT
+        CREATE TABLE IF NOT EXISTS `User` (
+            UserID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            UserFullName VARCHAR(50) NOT NULL
         );
         """
     )
     print(f'Created User Table')
     return
 
+def create_singular_user(full_name: str) -> None:
+    cur.execute("INSERT INTO `User` (UserFullName) VALUES (%s)", (full_name,))
+    print(f'Inserted user\'s full name into User Table')
+    return 
+
+def create_multiple_users(full_names: tuple[str]) -> None:
+    cur.executemany("INSERT INTO `User` (UserFullName) VALUES (%s)", full_names)
+    print(f'Inserted MULTIPLE users\' full names into User Table')
+    return 
+
+def get_all_users() -> list[dict]:
+    cur.execute("SELECT * FROM `User`")
+    return cur.fetchall()
+
+def get_all_user_ids() -> list[int]:
+    users = get_all_users()
+    return [user['UserID'] for user in users]
+
+def get_all_user_full_names() -> list[str]:
+    users = get_all_users()
+    return [user['UserFullName'] for user in users]
+
 drop_db_if_exists()
 create_db_if_not_exists()
 use_db()
 create_user_table()
 
+test_user_1_name = "Leo Costa"
+create_singular_user(full_name=test_user_1_name)
+
+all_user_ids = get_all_user_ids()
+all_user_full_names = get_all_user_full_names()
+print(f'All Current User IDs: {all_user_ids}')
+print(f'All Current User Full Names: {all_user_full_names}')
+
+test_user_2_name = "Bob Doe"
+test_user_3_name = "Alice Doe"
+test_user_4_name = "John Doe"
+create_multiple_users(
+    (test_user_2_name, test_user_3_name, test_user_4_name)
+)
+
+all_user_ids = get_all_user_ids()
+all_user_full_names = get_all_user_full_names()
+print(f'All Current User IDs: {all_user_ids}')
+print(f'All Current User Full Names: {all_user_full_names}')
