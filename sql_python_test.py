@@ -35,8 +35,6 @@ def create_db_if_not_exists() -> None:
     )
     print(f"Created DB: {db_name}")
     return
-
-
 def use_db() -> None:
     cur.execute(
         f'USE {db_name};'
@@ -91,8 +89,6 @@ def create_order_table() -> None:
     print(f'Created Order Table')
     return
 
-
-
 def alter_order_table_to_include_bids_and_ask_type() -> None:
     cur.execute(
         """
@@ -104,7 +100,6 @@ def alter_order_table_to_include_bids_and_ask_type() -> None:
     print(f'Added Bids & Asks to Order Table')
 
 
-
 '''
 General Table Creation & Alteration
 '''
@@ -114,7 +109,6 @@ use_db()
 create_user_table()
 create_company_table()
 create_order_table()
-
 alter_order_table_to_include_bids_and_ask_type()
 
 
@@ -208,7 +202,6 @@ mini_reverse_side_hashmap = {
     1: 'Ask'
 }
 
-
 def create_order_for_user(user_id: int, stock_id: int, bid_or_ask: str) -> None:
     cur.execute("INSERT INTO `Order` (UserID, StockID, `Side`) VALUES (%s, %s, %s)", (user_id, stock_id, mini_side_hashmap[bid_or_ask]))
     print(f'Created {mini_reverse_side_hashmap[mini_side_hashmap[bid_or_ask]]} Order of Stock ID: {stock_id} for User ID: {user_id}')
@@ -227,5 +220,6 @@ create_order_for_user(2, 1, 'Ask')
 create_order_for_user(3, 2, 'Bid')
 all_current_orders = get_all_orders()
 print(f'All Current Orders: {all_current_orders}')
+
 # all_current_order_ids = get_all_order_ids()
 # print(f'All Current Order IDs: {all_current_order_ids}')
