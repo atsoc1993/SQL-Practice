@@ -5,9 +5,12 @@
   display: flex;
   min-height: 100vh;
   min-width: 100vw;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 body {
   display: flex;
   min-height: 100vh;
   min-width: 100vw;
+  cursor: crosshair;
+  user-select: none;
 }

@@ -1,8 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import DataForm from './DataForm';
 import axios from 'axios';
 import './index.css';
+import DataPage from './DataPage';
 
 export default function App() {
+
+  const [viewingData, setViewingData] = useState(false);
 
   useEffect(() => {
     const testFastApi = async () => {
@@ -13,10 +17,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className='h-full bg-slate-300 flex min-w-full w-full mx-auto items-center'>
-      <input className='min-w-fit shadow-md shadow-amber-600 h-fit mx-auto justify-self-center p-6 rounded-xl text-center border-none'
-      placeholder='Enter Company Name'
-      ></input>
-    </div>
+    <>
+
+      <button className={'w-1/6 p-6 m-5 fixed rounded-xl shadow-md shadow-slate-600' + ' ' + (!viewingData ? 'bg-orange-200' : 'bg-blue-300')}
+        onClick={() => setViewingData(!viewingData)}
+      >
+        {viewingData ? 'Back to Form' : 'View Data'}</button>
+      {viewingData ? <DataPage /> : <DataForm />}
+    </>
   );
 };
