@@ -5,7 +5,8 @@ from sqlalchemy import (
     ForeignKey, 
     Connection,
     Engine,
-    Boolean
+    Boolean,
+    select
 )
 from sqlalchemy.orm import(
     DeclarativeBase, 
@@ -81,12 +82,17 @@ def insert_companies(companies: list[CompanyInfo], engine: Engine) -> list[int]:
         return [c.StockID for c in companies]
     
 def insert_orders(orders: list[OrderInfo], engine: Engine) -> list[int]:
-    orders[0].is_bid
     with Session(engine) as session:
         orders: list[Order] = [Order(StockID=order.stock_id, UserID=order.user_id, IsBid=order.is_bid) for order in orders]
         session.add_all(orders)
         session.commit()
         return [o.OrderID for o in orders]
+    
+def get_users(engine: Engine) -> list[User]:
+    with Session(engine) as session:
+        users = session.scalars(select(User)).all()
+        return [{'user_id': user.UserID, 'full_name': user.UserFullName} for user in users]
+
     
 user = "root"
 password = os.getenv('PASSWORD')
