@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DataForm from './DataForm';
-import axios from 'axios';
 import './index.css';
 import DataPage from './DataPage';
 
@@ -8,13 +7,13 @@ export default function App() {
 
   const [viewingData, setViewingData] = useState(false);
 
-  useEffect(() => {
-    const testFastApi = async () => {
-      const result = await axios.get('http://127.0.0.1:8000');
-      console.log(result.data);
-    };
-    testFastApi();
-  }, []);
+  // useEffect(() => {
+  //   const testFastApi = async () => {
+  //     const result = await axios.get('http://127.0.0.1:8000');
+  //     console.log(result.data);
+  //   };
+  //   testFastApi();
+  // }, []);
 
   return (
     <>
