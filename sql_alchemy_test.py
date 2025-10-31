@@ -1,6 +1,7 @@
 from sqlalchemy import (
     create_engine, 
     Integer, 
+    Float,
     String, 
     ForeignKey, 
     Connection,
@@ -49,22 +50,28 @@ class Company(MappedAsDataclass, Base):
     StockID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, init=False)
     CompanyName: Mapped[str] = mapped_column(String(50), nullable=False)
     AssetTicker: Mapped[str] = mapped_column(String(10), nullable=False)
+    CirculatingShares: Mapped[int] = mapped_column(Integer, nullable=False)
+    MarketCapitalization: Mapped[float] = mapped_column(Float, nullable=False)
 
 class CompanyInfo(BaseModel):
     name: str
     ticker: str
+    circulating_shares: int
+    market_capitalization: float
 
 class Order(MappedAsDataclass, Base):
     __tablename__ = "Order"
     OrderID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, init=False)
     UserID: Mapped[int] = mapped_column(Integer, ForeignKey("User.UserID", onupdate="CASCADE", ondelete="RESTRICT"))
     StockID: Mapped[int] = mapped_column(Integer, ForeignKey("Company.StockID", onupdate="CASCADE", ondelete="RESTRICT"))
-    IsBid: Mapped[bool] = mapped_column(Boolean)
+    IsBid: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    Price: Mapped[float] = mapped_column(Float, nullable=False)
 
 class OrderInfo(BaseModel):
     user_id: int
     stock_id: int
     is_bid: bool
+    price: float
 
 def insert_users(full_names: list[str], engine: Engine) -> list[int]:
     with Session(engine) as session:
@@ -76,14 +83,28 @@ def insert_users(full_names: list[str], engine: Engine) -> list[int]:
 
 def insert_companies(companies: list[CompanyInfo], engine: Engine) -> list[int]:
     with Session(engine) as session:
-        companies: list[Company] = [Company(CompanyName=company.name, AssetTicker=company.ticker) for company in companies]
+        companies: list[Company] = [
+            Company(
+                CompanyName=company.name, 
+                AssetTicker=company.ticker, 
+                CirculatingShares=company.circulating_shares, 
+                MarketCapitalization=company.market_capitalization
+            ) for company in companies
+        ]
         session.add_all(companies)
         session.commit()
         return [c.StockID for c in companies]
     
 def insert_orders(orders: list[OrderInfo], engine: Engine) -> list[int]:
     with Session(engine) as session:
-        orders: list[Order] = [Order(StockID=order.stock_id, UserID=order.user_id, IsBid=order.is_bid) for order in orders]
+        orders: list[Order] = [
+            Order(
+                StockID=order.stock_id, 
+                UserID=order.user_id, 
+                IsBid=order.is_bid, 
+                Price=order.price
+                ) for order in orders
+            ]
         session.add_all(orders)
         session.commit()
         return [o.OrderID for o in orders]
@@ -116,37 +137,37 @@ engine = create_engine(f'{base_url}/{db}')
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
-user_full_names = ["Bob Doe", "Alice Joe", "John Doe", "Jane Doe"]
-generated_user_ids = insert_users(
-    full_names=user_full_names,
-    engine=engine
-)
+# user_full_names = ["Bob Doe", "Alice Joe", "John Doe", "Jane Doe"]
+# generated_user_ids = insert_users(
+#     full_names=user_full_names,
+#     engine=engine
+# )
 
-print(generated_user_ids)
-companies_info: list[CompanyInfo] = [
-    CompanyInfo(name="Test Company #1", ticker="TC1"),
-    CompanyInfo(name="Test Company #2", ticker="TC2"),
-    CompanyInfo(name="Test Company #3", ticker="TC3"),
-    CompanyInfo(name="Test Company #4", ticker="TC4")
-]
+# print(generated_user_ids)
+# companies_info: list[CompanyInfo] = [
+#     CompanyInfo(name="Test Company #1", ticker="TC1"),
+#     CompanyInfo(name="Test Company #2", ticker="TC2"),
+#     CompanyInfo(name="Test Company #3", ticker="TC3"),
+#     CompanyInfo(name="Test Company #4", ticker="TC4")
+# ]
 
-generated_company_ids = insert_companies(
-    companies=companies_info,
-    engine=engine
-)
-print(generated_company_ids)
+# generated_company_ids = insert_companies(
+#     companies=companies_info,
+#     engine=engine
+# )
+# print(generated_company_ids)
 
-orders_info: list[OrderInfo] = [
-    OrderInfo(user_id=1, stock_id=1, is_bid=False),
-    OrderInfo(user_id=2, stock_id=2, is_bid=True),
-    OrderInfo(user_id=3, stock_id=3, is_bid=True),
-    OrderInfo(user_id=4, stock_id=4, is_bid=False)
-]
+# orders_info: list[OrderInfo] = [
+#     OrderInfo(user_id=1, stock_id=1, is_bid=False),
+#     OrderInfo(user_id=2, stock_id=2, is_bid=True),
+#     OrderInfo(user_id=3, stock_id=3, is_bid=True),
+#     OrderInfo(user_id=4, stock_id=4, is_bid=False)
+# ]
 
-generated_order_ids = insert_orders(
-    orders=orders_info,
-    engine=engine
-)
-print(generated_order_ids)
+# generated_order_ids = insert_orders(
+#     orders=orders_info,
+#     engine=engine
+# )
+# print(generated_order_ids)
 
 
