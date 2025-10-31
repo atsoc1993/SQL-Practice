@@ -86,7 +86,7 @@ def add_user(payload: UserInfo) -> int:
 
 
 @app.get('/get_companies')
-def get_users() -> list[dict, any]:
+def get_companies() -> list[dict, any]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         companies = session.scalars(select(Company)).all()
@@ -102,7 +102,7 @@ def get_users() -> list[dict, any]:
         ]
 
 @app.post('/add_company')
-def add_user(payload: CompanyInfo) -> int:
+def add_company(payload: CompanyInfo) -> int:
     engine = create_engine(f'{base_url}/{db}')
     print(f'Received Company Info: {payload}')
     with Session(engine) as session:
