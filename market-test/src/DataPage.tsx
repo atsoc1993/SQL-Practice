@@ -12,15 +12,17 @@ export default function DataPage() {
         stock_id: number;
         company_name: string;
         asset_ticker: string;
-    };
+        circulating_shares: number | undefined;
+        market_capitalization: number | undefined;
+    }
 
     type OrderInfoResponse = {
         user_id: number;
         stock_id: string;
         order_id: number;
         is_bid: string;
+        price: number | undefined;
     };
-
 
     const [users, setUsers] = useState<UserInfoResponse[]>([]);
     const [companies, setCompanies] = useState<CompanyInfoResponse[]>([]);
@@ -53,10 +55,10 @@ export default function DataPage() {
 
 
     return (
-        <div className="min-w-full min-h-full bg-orange-200">
-            <h1 className="text-6xl m-20 text-center">Data View</h1>
+        <div className="min-w-full min-h-full bg-slate-400">
+            <h1 className="text-6xl m-20 mt-40 text-center">Data View</h1>
 
-            <div className="mx-auto w-5/12 max-w-5xl rounded-xl shadow-md shadow-slate-600">
+            <div className="mx-auto w-7/12 max-w-5xl rounded-xl shadow-md shadow-slate-600">
                 <div className="flex items-center justify-between px-5 py-4 bg-blue-400">
                     <h2 className="text-2xl font-semibold">Users</h2>
                     <span className="text-sm text-slate-500">{users.length} total</span>
@@ -91,7 +93,7 @@ export default function DataPage() {
                 </div>
             </div>
 
-            <div className="mx-auto w-5/12 max-w-5xl rounded-xl shadow-md shadow-slate-600 m-10">
+            <div className="mx-auto w-7/12 max-w-5xl rounded-xl shadow-md shadow-slate-600 m-10">
                 <div className="flex items-center justify-between px-5 py-4 bg-green-300">
                     <h2 className="text-2xl font-semibold">Companies</h2>
                     <span className="text-sm text-slate-500">{companies.length} total</span>
@@ -104,12 +106,15 @@ export default function DataPage() {
                                 <th className="px-5 py-3 text-sm font-medium">Stock ID</th>
                                 <th className="px-5 py-3 text-sm font-medium">Company Name</th>
                                 <th className="px-5 py-3 text-sm font-medium">Ticker</th>
+                                <th className="px-5 py-3 text-sm font-medium">Circulating Shares</th>
+                                <th className="px-5 py-3 text-sm font-medium">Market Cap</th>
+                                <th className="px-5 py-3 text-sm font-medium">Price</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 bg-emerald-200">
-                            {users.length === 0 ? (
+                            {companies.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="px-5 py-10 text-center text-slate-500">
+                                    <td colSpan={6} className="px-5 py-10 text-center text-slate-500">
                                         No Companies yet.
                                     </td>
                                 </tr>
@@ -119,6 +124,9 @@ export default function DataPage() {
                                         <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.stock_id}</td>
                                         <td className="px-5 py-3 text-sm text-slate-700">{c.company_name}</td>
                                         <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.asset_ticker}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.circulating_shares?.toLocaleString()}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${c.market_capitalization?.toLocaleString()}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${(c.market_capitalization && c.circulating_shares) ? (c.market_capitalization / c.circulating_shares).toLocaleString() : 'ERROR'}</td>
 
                                     </tr>
                                 ))
@@ -128,7 +136,7 @@ export default function DataPage() {
                 </div>
             </div>
 
-            <div className="mx-auto w-5/12 max-w-5xl rounded-xl shadow-md shadow-slate-600 m-10">
+            <div className="mx-auto w-7/12 max-w-5xl rounded-xl shadow-md shadow-slate-600 m-10">
                 <div className="flex items-center justify-between px-5 py-4 bg-red-300">
                     <h2 className="text-2xl font-semibold">Orders</h2>
                     <span className="text-sm text-slate-500">{orders.length} total</span>
@@ -145,10 +153,10 @@ export default function DataPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 bg-pink-300">
-                            {users.length === 0 ? (
+                            {orders.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-5 py-10 text-center text-slate-500">
-                                        No Companies yet.
+                                        No Orders yet.
                                     </td>
                                 </tr>
                             ) : (

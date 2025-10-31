@@ -1,36 +1,42 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import axios from 'axios'
 
 export default function DataForm() {
 
     type UserInfo = {
-        full_name: string | undefined
+        full_name: string | undefined;
     }
 
     type CompanyInfo = {
-        name: string | undefined,
-        ticker: string | undefined
+        name: string | undefined;
+        ticker: string | undefined;
+        circulating_shares: number | undefined;
+        market_capitalization: number | undefined;
     }
 
     type OrderInfo = {
-        user_id: number | undefined,
-        stock_id: number | undefined,
-        is_bid: boolean | undefined
+        user_id: number | undefined;
+        stock_id: number | undefined;
+        is_bid: boolean | undefined;
+        price: number | undefined;
     }
     const userInfoTemplate: UserInfo = {
         full_name: undefined
-    }
+    };
 
     const companyInfoTemplate: CompanyInfo = {
         name: undefined,
         ticker: undefined,
-    }
+        circulating_shares: undefined,
+        market_capitalization: undefined
+    };
 
     const orderInfoTemplate: OrderInfo = {
         user_id: undefined,
         stock_id: undefined,
-        is_bid: true
-    }
+        is_bid: true,
+        price: undefined
+    };
 
     const [userInfo, setUserInfo] = useState<UserInfo>(userInfoTemplate);
 
@@ -58,11 +64,16 @@ export default function DataForm() {
     };
 
     const insertCompany = async () => {
-        if ([companyInfo.name, companyInfo.ticker].some(v => v == null)) {
+        console.log(companyInfo)
+        if ([companyInfo.name, companyInfo.ticker, companyInfo.circulating_shares].some(v => v == null)) {
             if (companyInfo.name === undefined) {
                 alert('You did not enter a Company Name')
-            } else {
+            } else if (companyInfo.ticker === undefined) {
                 alert('You did not enter a Company Abbreviation')
+            } else if (companyInfo.circulating_shares === undefined) {
+                alert('You did not enter # of circulating shares')
+            } else if (companyInfo.market_capitalization === undefined) {
+                alert('You did not enter an Initial Market Cap')
             }
             return;
         }
@@ -75,8 +86,10 @@ export default function DataForm() {
         if ([orderInfo.is_bid, orderInfo.stock_id, orderInfo.user_id].some(v => v == null)) {
             if (orderInfo.stock_id === undefined) {
                 alert('You did not enter a Stock ID')
-            } else {
+            } else if (orderInfo.user_id === undefined) {
                 alert('You did not enter a User ID')
+            } else if (orderInfo.price === undefined) {
+                alert(`You did not enter a price for your ${orderInfo.is_bid ? 'bid' : 'ask'}`)
             }
             return;
         }
@@ -145,12 +158,25 @@ export default function DataForm() {
                             placeholder='Enter Abbreviation'
                             onChange={(e) => setCompanyInfo(prev => ({ ...prev, ticker: e.target.value }))}
                         ></input>
+                            <input className='min-w-fit shadow-md shadow-slate-600 m-5 h-fit p-6 rounded-xl text-center focus:outline-none'
+                                placeholder='Enter Circulating Supply'
+                                onChange={(e) => setCompanyInfo(prev => ({ ...prev, circulating_shares: Number(e.target.value) }))}
+                            ></input>
+                        <input className='min-w-fit shadow-md shadow-slate-600 m-5 h-fit p-6 rounded-xl text-center focus:outline-none'
+                            placeholder='Enter Market Cap.'
+                            onChange={(e) => setCompanyInfo(prev => ({ ...prev, market_capitalization: Number(e.target.value.split('$')[0]) }))}
+                        ></input>
                     </div>
 
                     <button className='min-w-fit bg-emerald-200 w-1/4 shadow-md shadow-slate-600 h-fit p-6 m-10 rounded-xl text-center hover:scale-105 transition-transform duration-150'
                         onClick={async () => {
                             setInsertingItem(true);
-                            await insertCompany()
+                            try {
+                                await insertCompany()
+
+                            } catch {
+                                setInsertingItem(false);
+                            }
                             setInsertingItem(false);
                         }}                    >
                         Insert Company </button>
@@ -190,15 +216,25 @@ export default function DataForm() {
                             placeholder="Enter Stock ID"
                             onChange={(e) => setOrderInfo(prev => ({ ...prev, stock_id: Number(e.target.value) }))}
                         ></input>
+                        <input className='min-w-fit shadow-md shadow-slate-600 m-5 h-fit p-6 rounded-xl text-center focus:outline-none'
+                            placeholder="Enter Price"
+                            onChange={(e) => setOrderInfo(prev => ({ ...prev, stock_id: Number(e.target.value) }))}
+                        ></input>
 
                     </div>
 
                     <button className='min-w-fit bg-pink-300 w-1/4 shadow-md shadow-slate-600 h-fit p-6 m-10 rounded-xl text-center hover:scale-105 transition-transform duration-150'
                         onClick={async () => {
                             setInsertingItem(true);
-                            await insertOrder()
+                            try {
+                                await insertOrder()
+
+                            } catch {
+                                setInsertingItem(false);
+                            }
                             setInsertingItem(false);
-                        }}                    >
+                        }}
+                    >
                         Insert Order
                     </button>
 

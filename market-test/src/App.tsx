@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import DataForm from './DataForm';
 import './index.css';
-import DataPage from './DataPage';
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
 
   const [viewingData, setViewingData] = useState(false);
+  const [viewingOrderPage, setViewingOrderPage] = useState(false);
 
+  const navigate = useNavigate();
   // useEffect(() => {
   //   const testFastApi = async () => {
   //     const result = await axios.get('http://127.0.0.1:8000');
@@ -17,12 +18,21 @@ export default function App() {
 
   return (
     <>
-
-      <button className={'w-1/6 p-6 m-5 fixed rounded-xl shadow-md shadow-slate-600' + ' ' + (!viewingData ? 'bg-orange-200' : 'bg-blue-300')}
-        onClick={() => setViewingData(!viewingData)}
+      <button className={'w-1/6 p-6 m-5 fixed rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+        onClick={() => navigate('/')}
       >
-        {viewingData ? 'Back to Form' : 'View Data'}</button>
-      {viewingData ? <DataPage /> : <DataForm />}
+        View Form
+      </button>
+      <button className={'w-1/6 p-6 m-5 fixed left-50 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+        onClick={() => navigate('data')}
+      >
+        View Data
+      </button>
+      <button className={'w-1/6 p-6 m-5 fixed left-100 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+        onClick={() => navigate('stocks')}
+      >
+        Create Orders
+      </button>
     </>
   );
 };
