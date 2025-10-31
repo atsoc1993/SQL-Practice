@@ -102,10 +102,10 @@ base_url = f"mysql+pymysql://{user}:{password}@{host}"
 
 server_engine = create_engine(base_url, isolation_level="AUTOCOMMIT")
 with server_engine.connect() as conn:
-    # drop_db_if_exists(
-    #     conn=conn,
-    #     db=db
-    # )
+    drop_db_if_exists(
+        conn=conn,
+        db=db
+    )
     create_db_if_not_exists(
         conn=conn,
         db=db
