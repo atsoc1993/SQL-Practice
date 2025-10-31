@@ -97,6 +97,7 @@ def add_user(payload: CompanyInfo) -> int:
         session.commit()
         return company.StockID
     
+    
 @app.get('/get_orders')
 def get_orders() -> list[dict, any]:
     engine = create_engine(f'{base_url}/{db}')
