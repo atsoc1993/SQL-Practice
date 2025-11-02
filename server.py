@@ -96,7 +96,7 @@ def get_users_orders(users_orders_request: UserOrdersRequest) -> list[dict]:
                 )
             )
         ).all()
-        return [{'UserID': o.UserID, 'StockID': o.StockID, 'IsBid': o.IsBid, 'Price': o.Price} for o in orders]
+        return [{'OrderID': o.OrderID, 'UserID': o.UserID, 'StockID': o.StockID, 'IsBid': o.IsBid, 'Price': o.Price} for o in orders]
     
 @app.post('/users/add_user')
 def add_user(payload: UserInfo) -> int:
@@ -114,7 +114,7 @@ def get_companies() -> list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         companies = session.scalars(select(Company)).all()
-        return [{'StockID': c.StockID, 'Name': c.CompanyName, 'AssetTicker': c.AssetTicker, 'CirculatingShares': c.CirculatingShares, 'MarketCapitalization': c.MarketCapitalization} for c in companies]
+        return [{'StockID': c.StockID, 'CompanyName': c.CompanyName, 'AssetTicker': c.AssetTicker, 'CirculatingShares': c.CirculatingShares, 'MarketCapitalization': c.MarketCapitalization} for c in companies]
     
 
 @app.post('/companies/add_company')
@@ -133,7 +133,8 @@ def add_company(payload: CompanyInfo) -> int:
         return company.StockID
     
 @app.get('/companies/get_company_by_id/{company_id}')
-def get_company_by_id(company_id: int) -> list[dict]:
+def get_company_by_id(company_id: int) -> dict:
+    print(f'Company ID Requested: {company_id}')
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         company = session.scalar(select(Company).where(Company.StockID == company_id))
