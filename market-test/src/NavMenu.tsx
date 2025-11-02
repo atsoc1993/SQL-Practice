@@ -20,12 +20,12 @@ export default function NavMenu() {
         View Form
       </button>
       <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
-        onClick={() => navigate('data')}
+        onClick={() => navigate('/data')}
       >
         View Data
       </button>
       <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
-        onClick={() => navigate('stocks')}
+        onClick={() => navigate('/stocks')}
       >
         Create Orders
       </button>
