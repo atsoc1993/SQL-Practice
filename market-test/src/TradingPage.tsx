@@ -30,7 +30,8 @@ export default function TradingPage() {
 
     const [usersOrders, setUsersOrders] = useState<OrderInfoResponse[]>([])
     const [companyInfo, setCompanyInfo] = useState<CompanyInfoResponse | undefined>(undefined)
-
+    const [allStockOrders, setAllStockOrders] = useState<OrderInfoResponse[]>([])
+    
     const getCompanyInfo = async () => {
         const result = await axios.get(`http://127.0.0.1:8000/companies/get_company_by_id/${stockId}`)
         const data: CompanyInfoResponse = result.data
