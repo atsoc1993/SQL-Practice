@@ -166,7 +166,7 @@ export default function DataPage() {
                                 </tr>
                             ) : (
                                 orders.map(o => (
-                                    <tr key={o.OrderID} className="hover:bg-green-300 text-center">
+                                    <tr key={o.OrderID} className="hover:bg-red-300 text-center">
                                         <td className="px-5 py-3 text-sm text-slate-700">{o.OrderID}</td>
                                         <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.StockID}</td>
                                         <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.UserID}</td>
