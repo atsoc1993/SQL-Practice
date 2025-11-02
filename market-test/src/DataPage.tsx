@@ -59,7 +59,7 @@ export default function DataPage() {
 
     return (
         <div className="min-w-full min-h-full bg-slate-400">
-                <NavMenu />
+            <NavMenu />
 
             <h1 className="text-6xl m-20 mt-40 text-center">Data View</h1>
 
