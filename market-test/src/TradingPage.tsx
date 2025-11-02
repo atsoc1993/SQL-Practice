@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import NavMenu from "./NavMenu";
 
 type CompanyInfoResponse = {
     StockID: number;
@@ -62,7 +63,8 @@ export default function TradingPage() {
 
     return (
         <div className="min-w-full min-h-full bg-gray-900 flex flex-col items-center">
-            <h1 className="text-6xl m-20 mt-40 text-center text-white">Create Orders</h1>
+            <NavMenu />
+            <h1 className="text-6xl m-20 mt-20 text-center text-white">Create Orders</h1>
 
             {/* display general company info, all bids and asks, and users current open orders */}
 
@@ -92,7 +94,7 @@ export default function TradingPage() {
                             </tr>
                         ) : (
                             orders.map(o => (
-                                <tr key={o.OrderID} className="hover:bg-green-300 text-center">
+                                <tr key={o.OrderID} className="hover:bg-red-300 text-center">
                                     <td className="px-5 py-3 text-sm text-slate-700">{o.OrderID}</td>
                                     <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.StockID}</td>
                                     <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.UserID}</td>
