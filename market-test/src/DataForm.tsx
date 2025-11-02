@@ -164,7 +164,7 @@ export default function DataForm() {
 
     return (
         <>
-            <div className='h-full bg-slate-300 flex min-w-full mx-auto flex-col items-center'>
+            <div className='h-full flex min-w-full mx-auto flex-col items-center'>
                 <NavMenu />
                 {insertingItem && <InsertingItem />}
                 <div className='h-fit bg-blue-400 flex min-w-full mx-auto flex-col items-center p-6'>
