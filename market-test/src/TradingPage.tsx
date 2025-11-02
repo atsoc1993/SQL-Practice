@@ -28,7 +28,7 @@ type UserOrdersRequest = {
 export default function TradingPage() {
     const { userId, stockId } = useParams<{ userId: string, stockId: string }>();
 
-    const [orders, setOrders] = useState<OrderInfoResponse[]>([])
+    const [usersOrders, setUsersOrders] = useState<OrderInfoResponse[]>([])
     const [companyInfo, setCompanyInfo] = useState<CompanyInfoResponse | undefined>(undefined)
 
     const getCompanyInfo = async () => {
@@ -46,11 +46,20 @@ export default function TradingPage() {
             StockID: Number(stockId)
         }
         const result = await axios.post(`http://127.0.0.1:8000/users/user_orders`, usersOrderRequest)
-        setOrders(result.data)
+        setUsersOrders(result.data)
         console.log(result.data)
     }
-
-
+    
+    const getAllOrdersForStock = async () => {
+        // if (!userId || !stockId) return;
+        // const usersOrderRequest: UserOrdersRequest = {
+        //     UserID: Number(userId),
+        //     StockID: Number(stockId)
+        // }
+        // const result = await axios.post(`http://127.0.0.1:8000/users/user_orders`, usersOrderRequest)
+        // setOrders(result.data)
+        // console.log(result.data)
+    }
     useEffect(() => {
         getCompanyInfo()
         getUsersOrders()
@@ -86,14 +95,14 @@ export default function TradingPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 bg-pink-300">
-                        {orders.length === 0 ? (
+                        {usersOrders.length === 0 ? (
                             <tr>
                                 <td colSpan={4} className="px-5 py-10 text-center text-slate-500">
                                     No Orders yet.
                                 </td>
                             </tr>
                         ) : (
-                            orders.map(o => (
+                            usersOrders.map(o => (
                                 <tr key={o.OrderID} className="hover:bg-red-300 text-center">
                                     <td className="px-5 py-3 text-sm text-slate-700">{o.OrderID}</td>
                                     <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.StockID}</td>
