@@ -38,6 +38,9 @@ class User(MappedAsDataclass, Base):
 class UserInfo(BaseModel):
     FullName: str
 
+class UserInfoResponse(BaseModel):
+    UserID: int
+    UserFullName: str
 
 class Company(MappedAsDataclass, Base):
     __tablename__ = "Company"
@@ -47,14 +50,12 @@ class Company(MappedAsDataclass, Base):
     CirculatingShares: Mapped[int] = mapped_column(BigInteger, nullable=False)
     MarketCapitalization: Mapped[float] = mapped_column(BigInteger, nullable=False)
 
-
 class CompanyInfo(BaseModel):
     StockID: int
     CompanyName: str
     AssetTicker: str
     CirculatingShares: int
     MarketCapitalization: float
-    model_config = ConfigDict(from_attributes=True)
 
 
 class Order(MappedAsDataclass, Base):
@@ -66,6 +67,7 @@ class Order(MappedAsDataclass, Base):
     Price: Mapped[float] = mapped_column(Float, nullable=False)
 
 class OrderInfo(BaseModel):
+    OrderID: int
     UserID: int
     StockID: int
     IsBid: bool
@@ -75,15 +77,15 @@ class UserOrdersRequest(BaseModel):
     UserID: int
     StockID: int
     
-@app.get('/users/get_users', response_model=list[User])
-def get_users() -> list[User]:
+@app.get('/users/get_users')
+def get_users() ->  list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         users = session.scalars(select(User)).all()
-        return users
+        return [{'UserID': u.UserID, 'UserFullName': u.UserFullName} for u in users]
 
-@app.post('/users/user_orders', response_model=list[Order])
-def get_users_orders(users_orders_request: UserOrdersRequest) -> list[Order]:
+@app.post('/users/user_orders')
+def get_users_orders(users_orders_request: UserOrdersRequest) -> list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         orders = session.scalars(
@@ -94,7 +96,7 @@ def get_users_orders(users_orders_request: UserOrdersRequest) -> list[Order]:
                 )
             )
         ).all()
-        return orders
+        return [{'UserID': o.UserID, 'StockID': o.StockID, 'IsBid': o.IsBid, 'Price': o.Price} for o in orders]
     
 @app.post('/users/add_user')
 def add_user(payload: UserInfo) -> int:
@@ -107,20 +109,12 @@ def add_user(payload: UserInfo) -> int:
         return user.UserID
 
 
-@app.get('/companies/get_companies', response_model=list[Company])
-def get_companies() -> list[CompanyInfo]:
+@app.get('/companies/get_companies')
+def get_companies() -> list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         companies = session.scalars(select(Company)).all()
-
-            #Come back to this
-    #     raise HTTPException(status_code=403)
-    # #     return JSONResponse({
-    # #         'message': str(e)
-    # #     },
-    # #     status_code=403
-    # # )
-        return companies
+        return [{'StockID': c.StockID, 'Name': c.CompanyName, 'AssetTicker': c.AssetTicker, 'CirculatingShares': c.CirculatingShares, 'MarketCapitalization': c.MarketCapitalization} for c in companies]
     
 
 @app.post('/companies/add_company')
@@ -138,19 +132,20 @@ def add_company(payload: CompanyInfo) -> int:
         session.commit()
         return company.StockID
     
-@app.get('/companies/get_company_by_id/{company_id}', response_model=Company)
-def get_company_by_id(company_id: int) -> Company:
+@app.get('/companies/get_company_by_id/{company_id}')
+def get_company_by_id(company_id: int) -> list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         company = session.scalar(select(Company).where(Company.StockID == company_id))
-        return company
+        return {'StockID': company.StockID, 'CompanyName': company.CompanyName, 'AssetTicker': company.AssetTicker, 'CirculatingShares': company.CirculatingShares, 'MarketCapitalization': company.MarketCapitalization}
+
     
 @app.get('/orders/get_orders')
-def get_orders() -> list[Order]:
+def get_orders() -> list[dict]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         orders = session.scalars(select(Order)).all()
-        return orders
+        return [{'OrderID': o.OrderID, 'UserID': o.UserID, 'StockID': o.StockID, 'IsBid': o.IsBid, 'Price': o.Price} for o in orders]
         
 
 @app.post('/orders/add_order')
