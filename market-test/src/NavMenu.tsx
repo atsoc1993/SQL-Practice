@@ -13,7 +13,7 @@ export default function NavMenu() {
   // }, []);
 
   return (
-    <div className='h-fit flex w-full'>
+    <div className='h-fit flex w-full bg-gray-200'>
       <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
         onClick={() => navigate('/')}
       >
