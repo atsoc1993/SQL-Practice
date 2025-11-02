@@ -3,24 +3,25 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 type CompanyInfoResponse = {
-    stock_id: number;
-    company_name: string;
-    asset_ticker: string;
-    circulating_shares: number | undefined;
-    market_capitalization: number | undefined;
+    StockID: number;
+    CompanyName: string;
+    AssetTicker: string;
+    CirculatingShares: number | undefined;
+    MarketCapitalization: number | undefined;
 }
 
+
 type OrderInfoResponse = {
-    user_id: number;
-    stock_id: string;
-    order_id: number;
-    is_bid: string;
-    price: number | undefined;
+    UserID: number;
+    StockID: string;
+    OrderID: number;
+    IsBid: string;
+    Price: number | undefined;
 };
 
 type UserOrdersRequest = {
-    user_id: number;
-    stock_id: number;
+    UserID: number;
+    StockID: number;
 }
 
 export default function TradingPage() {
@@ -40,8 +41,8 @@ export default function TradingPage() {
         console.log(userId, stockId)
         if (!userId || !stockId) return;
         const usersOrderRequest: UserOrdersRequest = {
-            user_id: Number(userId),
-            stock_id: Number(stockId)
+            UserID: Number(userId),
+            StockID: Number(stockId)
         }
         const result = await axios.post(`http://127.0.0.1:8000/users/user_orders`, usersOrderRequest)
         setOrders(result.data)
@@ -65,12 +66,12 @@ export default function TradingPage() {
 
             {/* display general company info, all bids and asks, and users current open orders */}
 
-            <h1 className="text-white place-self-center mb-5 text-4xl">{companyInfo?.company_name} ({companyInfo?.asset_ticker})</h1>
+            <h1 className="text-white place-self-center mb-5 text-4xl">{companyInfo?.CompanyName} ({companyInfo?.AssetTicker})</h1>
             <div className="overflow-x-auto w-3/4">
             <div className="mb-10">
-                <h1 className="text-white place-self-center mb-5 text-sm">Market Capitalization: {companyInfo?.market_capitalization?.toLocaleString()}</h1>
-                <h1 className="text-white place-self-center mb-5 text-sm">Circulating Shares: {companyInfo?.circulating_shares?.toLocaleString()}</h1>
-                <h1 className="text-white place-self-center mb-5 text-sm">Price: ${(companyInfo && companyInfo.market_capitalization && companyInfo.circulating_shares) ? (companyInfo.market_capitalization / companyInfo.circulating_shares).toLocaleString() : 'ERROR'}</h1>
+                <h1 className="text-white place-self-center mb-5 text-sm">Market Capitalization: {companyInfo?.MarketCapitalization?.toLocaleString()}</h1>
+                <h1 className="text-white place-self-center mb-5 text-sm">Circulating Shares: {companyInfo?.CirculatingShares?.toLocaleString()}</h1>
+                <h1 className="text-white place-self-center mb-5 text-sm">Price: ${(companyInfo && companyInfo.MarketCapitalization && companyInfo.CirculatingShares) ? (companyInfo.MarketCapitalization / companyInfo.CirculatingShares).toLocaleString() : 'ERROR'}</h1>
             </div>
             <h1 className="text-white place-self-center mb-5 text-2xl">Your Open Orders</h1>
                 <table className="w-full border-t border-slate-200 ">
@@ -91,11 +92,11 @@ export default function TradingPage() {
                             </tr>
                         ) : (
                             orders.map(o => (
-                                <tr key={o.order_id} className="hover:bg-green-300 text-center">
-                                    <td className="px-5 py-3 text-sm text-slate-700">{o.order_id}</td>
-                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.stock_id}</td>
-                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.user_id}</td>
-                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.is_bid ? 'Bid' : 'Ask'}</td>
+                                <tr key={o.OrderID} className="hover:bg-green-300 text-center">
+                                    <td className="px-5 py-3 text-sm text-slate-700">{o.OrderID}</td>
+                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.StockID}</td>
+                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.UserID}</td>
+                                    <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.IsBid ? 'Bid' : 'Ask'}</td>
 
                                 </tr>
                             ))
