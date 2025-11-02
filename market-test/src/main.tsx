@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import DataForm from './DataForm.tsx'
 import DataPage from './DataPage.tsx'
@@ -13,8 +12,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path='/' element={<DataForm />} />
             <Route path='data' element={<DataPage />} />
             <Route path='stocks' element={<StockPage />} />
-            <Route path='stocks/trade/:stockId' element={<TradingPage />} />
+            <Route path='stocks/trade/:userId/:stockId' element={<TradingPage />} />
         </Routes>
-        <App />
     </BrowserRouter>
 )

@@ -1,27 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-
+import NavMenu from "./NavMenu";
 export default function DataPage() {
 
     type UserInfoResponse = {
-        user_id: number;
-        full_name: string;
+        UserID: number;
+        UserFullName: string;
     };
 
     type CompanyInfoResponse = {
-        stock_id: number;
-        company_name: string;
-        asset_ticker: string;
-        circulating_shares: number | undefined;
-        market_capitalization: number | undefined;
+        StockID: number;
+        CompanyName: string;
+        AssetTicker: string;
+        CirculatingShares: number | undefined;
+        MarketCapitalization: number | undefined;
     }
 
+
     type OrderInfoResponse = {
-        user_id: number;
-        stock_id: string;
-        order_id: number;
-        is_bid: string;
-        price: number | undefined;
+        UserID: number;
+        StockID: string;
+        OrderID: number;
+        IsBid: string;
+        Price: number | undefined;
     };
 
     const [users, setUsers] = useState<UserInfoResponse[]>([]);
@@ -31,18 +32,20 @@ export default function DataPage() {
 
 
     const getUsers = async () => {
-        const response = await axios.get('http://127.0.0.1:8000/get_users')
+        const response = await axios.get('http://127.0.0.1:8000/users/get_users')
+        console.log(response.data)
         setUsers(response.data)
     };
 
     const getCompanies = async () => {
-        const response = await axios.get('http://127.0.0.1:8000/get_companies')
-        console.log(response.data)
-        setCompanies(response.data)
+        const response = await axios.get('http://127.0.0.1:8000/companies/get_companies')
+        const data: CompanyInfoResponse[] = response.data
+        console.log(data)
+        setCompanies(data)
     };
 
     const getOrders = async () => {
-        const response = await axios.get('http://127.0.0.1:8000/get_orders')
+        const response = await axios.get('http://127.0.0.1:8000/orders/get_orders')
         console.log(response.data)
         setOrders(response.data)
     };
@@ -56,6 +59,8 @@ export default function DataPage() {
 
     return (
         <div className="min-w-full min-h-full bg-slate-400">
+                <NavMenu />
+
             <h1 className="text-6xl m-20 mt-40 text-center">Data View</h1>
 
             <div className="mx-auto w-7/12 max-w-5xl rounded-xl shadow-md shadow-slate-600">
@@ -81,9 +86,9 @@ export default function DataPage() {
                                 </tr>
                             ) : (
                                 users.map(u => (
-                                    <tr key={u.user_id} className="hover:bg-blue-400 text-center">
-                                        <td className="px-5 py-3 text-sm text-slate-700">{u.user_id}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{u.full_name}</td>
+                                    <tr key={u.UserID} className="hover:bg-blue-400 text-center">
+                                        <td className="px-5 py-3 text-sm text-slate-700">{u.UserID}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{u.UserFullName}</td>
 
                                     </tr>
                                 ))
@@ -120,13 +125,13 @@ export default function DataPage() {
                                 </tr>
                             ) : (
                                 companies.map(c => (
-                                    <tr key={c.company_name} className="hover:bg-green-300 text-center">
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.stock_id}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-700">{c.company_name}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.asset_ticker}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.circulating_shares?.toLocaleString()}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${c.market_capitalization?.toLocaleString()}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${(c.market_capitalization && c.circulating_shares) ? (c.market_capitalization / c.circulating_shares).toLocaleString() : 'ERROR'}</td>
+                                    <tr key={c.CompanyName} className="hover:bg-green-300 text-center">
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.StockID}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-700">{c.CompanyName}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.AssetTicker}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{c.CirculatingShares?.toLocaleString()}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${c.MarketCapitalization?.toLocaleString()}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">${(c.MarketCapitalization && c.CirculatingShares) ? (c.MarketCapitalization / c.CirculatingShares).toLocaleString() : 'ERROR'}</td>
 
                                     </tr>
                                 ))
@@ -161,11 +166,11 @@ export default function DataPage() {
                                 </tr>
                             ) : (
                                 orders.map(o => (
-                                    <tr key={o.order_id} className="hover:bg-green-300 text-center">
-                                        <td className="px-5 py-3 text-sm text-slate-700">{o.order_id}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.stock_id}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.user_id}</td>
-                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.is_bid ? 'Bid' : 'Ask'}</td>
+                                    <tr key={o.OrderID} className="hover:bg-green-300 text-center">
+                                        <td className="px-5 py-3 text-sm text-slate-700">{o.OrderID}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.StockID}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.UserID}</td>
+                                        <td className="px-5 py-3 text-sm text-slate-900 font-medium">{o.IsBid ? 'Bid' : 'Ask'}</td>
 
                                     </tr>
                                 ))

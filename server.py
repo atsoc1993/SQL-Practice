@@ -1,11 +1,12 @@
 # pip install fastapi pydantic uvicorn
 # uvicorn server:app --reload to run with reload on changes
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Integer, String, Boolean, select, ForeignKey, Float
+from sqlalchemy import create_engine, Integer, String, BigInteger, Boolean, select, ForeignKey, Float, and_
 from sqlalchemy.orm import Session, MappedAsDataclass, Mapped, mapped_column, DeclarativeBase
 import os
 
@@ -35,7 +36,7 @@ class User(MappedAsDataclass, Base):
 
 
 class UserInfo(BaseModel):
-    full_name: str
+    FullName: str
 
 
 class Company(MappedAsDataclass, Base):
@@ -43,14 +44,18 @@ class Company(MappedAsDataclass, Base):
     StockID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, init=False)
     CompanyName: Mapped[str] = mapped_column(String(50), nullable=False)
     AssetTicker: Mapped[str] = mapped_column(String(10), nullable=False)
-    CirculatingShares: Mapped[int] = mapped_column(Integer, nullable=False)
-    MarketCapitalization: Mapped[float] = mapped_column(Float, nullable=False)
+    CirculatingShares: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    MarketCapitalization: Mapped[float] = mapped_column(BigInteger, nullable=False)
+
 
 class CompanyInfo(BaseModel):
-    name: str
-    ticker: str
-    circulating_shares: int
-    market_capitalization: float
+    StockID: int
+    CompanyName: str
+    AssetTicker: str
+    CirculatingShares: int
+    MarketCapitalization: float
+    model_config = ConfigDict(from_attributes=True)
+
 
 class Order(MappedAsDataclass, Base):
     __tablename__ = "Order"
@@ -61,88 +66,103 @@ class Order(MappedAsDataclass, Base):
     Price: Mapped[float] = mapped_column(Float, nullable=False)
 
 class OrderInfo(BaseModel):
-    user_id: int
-    stock_id: int
-    is_bid: bool
-    price: float
+    UserID: int
+    StockID: int
+    IsBid: bool
+    Price: float
 
+class UserOrdersRequest(BaseModel):
+    UserID: int
+    StockID: int
     
-@app.get('/get_users')
-def get_users():
+@app.get('/users/get_users', response_model=list[User])
+def get_users() -> list[User]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         users = session.scalars(select(User)).all()
-        return [{'user_id': user.UserID, 'full_name': user.UserFullName} for user in users]
+        return users
 
-@app.post('/add_user')
+@app.post('/users/user_orders', response_model=list[Order])
+def get_users_orders(users_orders_request: UserOrdersRequest) -> list[Order]:
+    engine = create_engine(f'{base_url}/{db}')
+    with Session(engine) as session:
+        orders = session.scalars(
+            select(Order).where(
+                and_(
+                    Order.StockID == users_orders_request.StockID, 
+                    Order.StockID == users_orders_request.UserID
+                )
+            )
+        ).all()
+        return orders
+    
+@app.post('/users/add_user')
 def add_user(payload: UserInfo) -> int:
     engine = create_engine(f'{base_url}/{db}')
     print(f'Received User Info: {payload}')
     with Session(engine) as session:
-        user = User(UserFullName=payload.full_name)
+        user = User(UserFullName=payload.FullName)
         session.add(user)
         session.commit()
         return user.UserID
 
 
-@app.get('/get_companies')
-def get_companies() -> list[dict, any]:
+@app.get('/companies/get_companies', response_model=list[Company])
+def get_companies() -> list[CompanyInfo]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         companies = session.scalars(select(Company)).all()
-        return [
-            {
-                'stock_id': company.StockID, 
-                'company_name': company.CompanyName, 
-                'asset_ticker': company.AssetTicker,
-                'circulating_shares': company.CirculatingShares,
-                'market_capitalization': company.MarketCapitalization
-            }
-            for company in companies
-        ]
 
-@app.post('/add_company')
+            #Come back to this
+    #     raise HTTPException(status_code=403)
+    # #     return JSONResponse({
+    # #         'message': str(e)
+    # #     },
+    # #     status_code=403
+    # # )
+        return companies
+    
+
+@app.post('/companies/add_company')
 def add_company(payload: CompanyInfo) -> int:
     engine = create_engine(f'{base_url}/{db}')
     print(f'Received Company Info: {payload}')
     with Session(engine) as session:
         company = Company(
-            CompanyName=payload.name, 
-            AssetTicker=payload.ticker,
-            CirculatingShares=payload.circulating_shares,
-            MarketCapitalization=payload.market_capitalization
+            CompanyName=payload.CompanyName, 
+            AssetTicker=payload.AssetTicker,
+            CirculatingShares=payload.CirculatingShares,
+            MarketCapitalization=payload.MarketCapitalization
         )
         session.add(company)
         session.commit()
         return company.StockID
     
+@app.get('/companies/get_company_by_id/{company_id}', response_model=Company)
+def get_company_by_id(company_id: int) -> Company:
+    engine = create_engine(f'{base_url}/{db}')
+    with Session(engine) as session:
+        company = session.scalar(select(Company).where(Company.StockID == company_id))
+        return company
     
-@app.get('/get_orders')
-def get_orders() -> list[dict, any]:
+@app.get('/orders/get_orders')
+def get_orders() -> list[Order]:
     engine = create_engine(f'{base_url}/{db}')
     with Session(engine) as session:
         orders = session.scalars(select(Order)).all()
-        return [
-            {
-                'user_id': order.UserID,
-                'stock_id': order.StockID, 
-                'order_id': order.OrderID, 
-                'is_bid': order.IsBid,
-                'price': order.Price
-            } 
-            for order in orders
-        ]
+        return orders
+        
 
-@app.post('/add_order')
+@app.post('/orders/add_order')
 def add_order(payload: OrderInfo) -> int:
     engine = create_engine(f'{base_url}/{db}')
     print(f'Received Order Info: {payload}')
     with Session(engine) as session:
         order = Order(
-            UserID=payload.user_id,
-            StockID=payload.stock_id,
-            IsBid=payload.is_bid,
-            Price=payload.price
+            UserID=payload.UserID,
+            StockID=payload.StockID,
+            IsBid=payload.IsBid,
+            Price=payload.Price
         )
         session.add(order)
         session.commit()

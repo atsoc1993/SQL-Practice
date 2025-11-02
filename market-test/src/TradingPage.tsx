@@ -1,4 +1,5 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 type CompanyInfoResponse = {
@@ -17,20 +18,41 @@ type OrderInfoResponse = {
     price: number | undefined;
 };
 
+type UserOrdersRequest = {
+    user_id: number;
+    stock_id: number;
+}
+
 export default function TradingPage() {
-    const { stockId } = useParams<{ stockId: string }>();
+    const { userId, stockId } = useParams<{ userId: string, stockId: string }>();
 
     const [orders, setOrders] = useState<OrderInfoResponse[]>([])
     const [companyInfo, setCompanyInfo] = useState<CompanyInfoResponse | undefined>(undefined)
 
     const getCompanyInfo = async () => {
+        const result = await axios.get(`http://127.0.0.1:8000/companies/get_company_by_id/${stockId}`)
+        const data: CompanyInfoResponse = result.data
+        console.log(data)
+        setCompanyInfo(data)
+    }   
 
+    const getUsersOrders = async () => {
+        console.log(userId, stockId)
+        if (!userId || !stockId) return;
+        const usersOrderRequest: UserOrdersRequest = {
+            user_id: Number(userId),
+            stock_id: Number(stockId)
+        }
+        const result = await axios.post(`http://127.0.0.1:8000/users/user_orders`, usersOrderRequest)
+        setOrders(result.data)
+        console.log(result.data)
     }
 
-    const getCompanyOrders = async () => {
 
-    }
-
+    useEffect(() => {
+        getCompanyInfo()
+        getUsersOrders()
+    }, [])
     // const get this companies info
 
     // const get this companies orders (bid and ask)
@@ -43,7 +65,13 @@ export default function TradingPage() {
 
             {/* display general company info, all bids and asks, and users current open orders */}
 
+            <h1 className="text-white place-self-center mb-5 text-4xl">{companyInfo?.company_name} ({companyInfo?.asset_ticker})</h1>
             <div className="overflow-x-auto w-3/4">
+            <div className="mb-10">
+                <h1 className="text-white place-self-center mb-5 text-sm">Market Capitalization: {companyInfo?.market_capitalization?.toLocaleString()}</h1>
+                <h1 className="text-white place-self-center mb-5 text-sm">Circulating Shares: {companyInfo?.circulating_shares?.toLocaleString()}</h1>
+                <h1 className="text-white place-self-center mb-5 text-sm">Price: ${(companyInfo && companyInfo.market_capitalization && companyInfo.circulating_shares) ? (companyInfo.market_capitalization / companyInfo.circulating_shares).toLocaleString() : 'ERROR'}</h1>
+            </div>
             <h1 className="text-white place-self-center mb-5 text-2xl">Your Open Orders</h1>
                 <table className="w-full border-t border-slate-200 ">
                     <thead className='bg-pink-300'>

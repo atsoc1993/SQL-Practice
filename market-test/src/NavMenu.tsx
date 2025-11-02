@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import './index.css';
 import { useNavigate } from 'react-router-dom';
 
-export default function App() {
-
-  const [viewingData, setViewingData] = useState(false);
-  const [viewingOrderPage, setViewingOrderPage] = useState(false);
+export default function NavMenu() {
 
   const navigate = useNavigate();
   // useEffect(() => {
@@ -17,22 +13,22 @@ export default function App() {
   // }, []);
 
   return (
-    <>
-      <button className={'w-1/6 p-6 m-5 fixed rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+    <div className='h-fit flex w-full'>
+      <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
         onClick={() => navigate('/')}
       >
         View Form
       </button>
-      <button className={'w-1/6 p-6 m-5 fixed left-50 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+      <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
         onClick={() => navigate('data')}
       >
         View Data
       </button>
-      <button className={'w-1/6 p-6 m-5 fixed left-100 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
+      <button className={'w-1/6 p-6 m-5 rounded-xl shadow-md shadow-slate-600 bg-orange-200'}
         onClick={() => navigate('stocks')}
       >
         Create Orders
       </button>
-    </>
+    </div>
   );
 };

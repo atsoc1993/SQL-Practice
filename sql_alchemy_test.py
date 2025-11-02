@@ -7,6 +7,7 @@ from sqlalchemy import (
     Connection,
     Engine,
     Boolean,
+    BigInteger,
     select
 )
 from sqlalchemy.orm import(
@@ -50,8 +51,8 @@ class Company(MappedAsDataclass, Base):
     StockID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, init=False)
     CompanyName: Mapped[str] = mapped_column(String(50), nullable=False)
     AssetTicker: Mapped[str] = mapped_column(String(10), nullable=False)
-    CirculatingShares: Mapped[int] = mapped_column(Integer, nullable=False)
-    MarketCapitalization: Mapped[float] = mapped_column(Float, nullable=False)
+    CirculatingShares: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    MarketCapitalization: Mapped[float] = mapped_column(BigInteger, nullable=False)
 
 class CompanyInfo(BaseModel):
     name: str
